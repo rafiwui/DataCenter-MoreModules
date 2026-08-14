@@ -82,7 +82,7 @@ public class AddBulkBoxToShop : BulkBoxBase
                 {
                     try
                     {
-                        __instance.SpawnNewCartItem(
+                        __instance.AddNewCartItem(
                             capturedConfig.OriginalID,
                             capturedConfig.BulkPrice,
                             templateItem.shopItemSO.itemType,
