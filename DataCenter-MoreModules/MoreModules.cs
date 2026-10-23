@@ -15,6 +15,11 @@ public class MoreModules : MelonMod
     {
         MelonLogger.Msg("===== More Modules Mod =====");
     }
+
+    public override void OnUpdate()
+    {
+        ModuleCounter.UpdateHud();
+    }
     
     public static void UpgradeToBulkBox(SFPBox box, int newCapacity)
         {
