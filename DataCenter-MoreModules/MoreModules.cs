@@ -33,7 +33,8 @@ public class MoreModules : MelonMod
                 newUsed[i] = box.usedPositions != null && i < box.usedPositions.Length ? box.usedPositions[i] : 0;
             }
 
-            int fullSlotValue = box.usedPositions != null && box.usedPositions.Length > 0 ? box.usedPositions[oldCap - 1] : 1;
+            // New slots always start full: a purchased box is full, and a loaded box has its saved flags applied afterwards
+            const int fullSlotValue = 1;
             
             for (int i = oldCap; i < newCapacity; i++)
             {
@@ -68,6 +69,8 @@ public class MoreModules : MelonMod
             // Overwrite the box's internal memory
             box.sfpPositions = newPositions;
             box.usedPositions = newUsed;
+            // The game serializes saveIntArray (an alias of usedPositions set in SFPBox.Awake), so it must follow the new array
+            box.saveIntArray = newUsed;
 
             // Scale the cardboard box up visually so the new layers don't poke out the top!
             box.transform.localScale = new Vector3(
