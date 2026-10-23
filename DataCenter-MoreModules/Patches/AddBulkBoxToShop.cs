@@ -100,14 +100,6 @@ public class AddBulkBoxToShop : BulkBoxBase
                     Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<UnityEngine.Events.UnityAction>(buyAction));
             }
 
-            if (templateItem.buttonExtended != null)
-            {
-                templateItem.buttonExtended.onClick.RemoveAllListeners();
-                ShopItem capOrig = templateItem;
-                System.Action restore = () => capOrig.ButtonBuyItem();
-                templateItem.buttonExtended.onClick.AddListener(
-                    Il2CppInterop.Runtime.DelegateSupport.ConvertDelegate<UnityEngine.Events.UnityAction>(restore));
-            }
             card.SetActive(true);
             cardsAddedThisTime++;
         }
