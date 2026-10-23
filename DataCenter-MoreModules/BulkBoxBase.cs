@@ -22,11 +22,4 @@ public class BulkBoxBase
         new BulkConfig { OriginalID = 2, BulkPrice = 11520, BulkName = "64x SFP28 Module Fiber 25Gbps", PrefabKeyword = "25gb", Quantity = 64  },
         new BulkConfig { OriginalID = 3, BulkPrice = 19200, BulkName = "64x QSFP+ Module Fiber 40Gbps", PrefabKeyword = "40gb", Quantity = 64  }
     };
-
-    // This dictionary tracks how many of EACH type of box are currently in the delivery queue
-    public static Dictionary<int, int> PendingBoxesByID = new Dictionary<int, int>()
-    {
-        { 0, 0 }, { 1, 0 }, { 2, 0 }, { 3, 0 }, { 4, 0}, {5, 0}, {6, 0}, {7, 0}
-    };
-    public static Dictionary<string, int> PendingBoxesByName = new Dictionary<string, int>();
 }
