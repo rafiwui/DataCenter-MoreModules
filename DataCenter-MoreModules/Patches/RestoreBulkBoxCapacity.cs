@@ -21,3 +21,24 @@ public class RestoreBulkBoxCapacity
             MoreModules.UpgradeToBulkBox(__instance, saved.Length);
     }
 }
+
+// Boxes dropped or changed by another player arrive as slot lists of the sender's capacity,
+// and CoopApplySlots only applies as many slots as the local box has
+[HarmonyPatch(typeof(SFPBox), nameof(SFPBox.CoopApplySlots))]
+public class RestoreBulkBoxCapacityFromSlots
+{
+    private const int MaxCapacity = 128;
+
+    public static void Prefix(SFPBox __instance, Il2CppSystem.Collections.Generic.List<int> slots)
+    {
+        if (slots == null || __instance.sfpPositions == null)
+        {
+            return;
+        }
+
+        if (slots.Count > __instance.sfpPositions.Length && slots.Count <= MaxCapacity)
+        {
+            MoreModules.UpgradeToBulkBox(__instance, slots.Count);
+        }
+    }
+}
