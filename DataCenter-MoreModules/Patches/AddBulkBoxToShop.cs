@@ -88,7 +88,7 @@ public class AddBulkBoxToShop : BulkBoxBase
                 {
                     // Look the template up again, the unit price and unlock state are read at click time
                     ShopItem template = FindTemplate(shop, config);
-                    if (template == null) return;
+                    if (template == null || !CoopGate.BulkAllowed()) return;
 
                     // A locked card unlocks the module type like the single box does (spends XP, or tells the player they lack it)
                     if (!template.isUnlocked)
@@ -151,7 +151,8 @@ public class AddBulkBoxToShop : BulkBoxBase
             var xpText = unlock.Find("Text")?.GetComponent<TextMeshProUGUI>();
             if (xpText != null && templateItem.txtXpToUnlock != null) xpText.text = templateItem.txtXpToUnlock.text;
         }
-        card.SetActive(true);
+        // Hidden while a vanilla player is in the coop session, see CoopGate
+        card.SetActive(CoopGate.BulkAllowed());
     }
 }
 
