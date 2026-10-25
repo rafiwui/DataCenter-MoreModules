@@ -30,7 +30,7 @@ public static class CartHelper
             StaticUIElements.instance?.SetNotification(LocId.ContainerAlreadyFull);
             return;
         }
-
+        
         ShopCartItem existing = null;
         if (shop.cartUIItems != null)
         {
