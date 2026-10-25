@@ -82,15 +82,12 @@ public class AddBulkBoxToShop : BulkBoxBase
                 {
                     try
                     {
-                        __instance.AddNewCartItem(
+                        CartHelper.AddToCart(
+                            __instance,
                             capturedConfig.OriginalID,
                             capturedConfig.BulkPrice,
                             templateItem.shopItemSO.itemType,
-                            capturedConfig.BulkName,
-                            new Il2CppSystem.Nullable<Color>()
-                        );
-                                
-                        __instance.UpdateCartTotal();
+                            capturedConfig.BulkName);
                         MelonLogger.Msg($"[BulkBox] Added {capturedConfig.BulkName} to Cart!");
                     }
                     catch (Exception ex) { MelonLogger.Error($"[BulkBox] Cart Error: {ex}"); }
