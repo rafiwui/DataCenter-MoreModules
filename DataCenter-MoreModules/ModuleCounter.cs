@@ -1,5 +1,7 @@
-﻿using Il2Cpp;
+using Il2Cpp;
+
 using Il2CppTMPro;
+
 using UnityEngine;
 
 namespace DataCenter_MoreModules;
@@ -17,13 +19,13 @@ public static class ModuleCounter
     public static string Text(SFPBox box)
     {
         var used = box.usedPositions;
-        int count = 0;
+        var count = 0;
         if (used is not null)
         {
-            count = used.Count<int>(x => x == 1);
+            count = used.Count(x => x == 1);
         }
 
-        string counter = $"{count} / {(used is null ? 0 : used.Length)} modules";
+        var counter = $"{count} / {(used is null ? 0 : used.Length)} modules";
         // labelText is the player's own label, keep it above the counter
         return string.IsNullOrEmpty(box.labelText)
             ? counter
@@ -54,10 +56,13 @@ public static class ModuleCounter
 
         if (held is null)
         {
+            // No null propagation: a destroyed Unity object is not a C# null
+#pragma warning disable IDE0031
             if (_hud != null)
             {
                 _hud.gameObject.SetActive(false);
             }
+#pragma warning restore IDE0031
             return;
         }
 
@@ -68,7 +73,7 @@ public static class ModuleCounter
         }
 
         // Only touch the TMP component when the text changed, this runs every frame
-        string text = Text(held);
+        var text = Text(held);
         if (text != _hudText)
         {
             _hud.text = text;

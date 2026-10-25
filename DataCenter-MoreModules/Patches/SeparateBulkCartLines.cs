@@ -1,4 +1,5 @@
 using HarmonyLib;
+
 using Il2Cpp;
 
 namespace DataCenter_MoreModules.Patches;
@@ -10,8 +11,15 @@ public class SeparateBulkCartLines
 {
     public static bool Prefix(ComputerShop __instance, int itemID, int price, PlayerManager.ObjectInHand itemType, string displayName)
     {
-        if (itemType != PlayerManager.ObjectInHand.SFPBox) return true;
-        if (!CartHelper.CartHasBulkLine(__instance, itemID, itemType)) return true;
+        if (itemType != PlayerManager.ObjectInHand.SFPBox)
+        {
+            return true;
+        }
+
+        if (!CartHelper.CartHasBulkLine(__instance, itemID, itemType))
+        {
+            return true;
+        }
 
         CartHelper.AddToCart(__instance, itemID, price, itemType, displayName);
         return false;

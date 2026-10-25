@@ -1,4 +1,5 @@
 using HarmonyLib;
+
 using Il2Cpp;
 
 namespace DataCenter_MoreModules.Patches;
@@ -15,10 +16,15 @@ public class RestoreBulkBoxCapacity
     {
         var saved = __instance.saveIntArray;
         var slots = __instance.sfpPositions;
-        if (saved == null || slots == null) return;
+        if (saved == null || slots == null)
+        {
+            return;
+        }
 
         if (saved.Length > slots.Length && saved.Length <= MaxCapacity)
+        {
             MoreModules.UpgradeToBulkBox(__instance, saved.Length);
+        }
     }
 }
 

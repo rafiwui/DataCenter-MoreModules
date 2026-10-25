@@ -21,11 +21,11 @@ dotnet_diagnostic.ide0004.severity = warning
 # IDE0005: Remove unused usings
 dotnet_diagnostic.ide0005.severity = warning
 # IDE0007/IDE0008: 'var' preferences
-csharp_style_var_for_built_in_types = false
-csharp_style_var_when_type_is_apparent = false
-csharp_style_var_elsewhere = false
-dotnet_diagnostic.ide0007.severity = none
-dotnet_diagnostic.ide0008.severity = warning
+csharp_style_var_for_built_in_types = true
+csharp_style_var_when_type_is_apparent = true
+csharp_style_var_elsewhere = true
+dotnet_diagnostic.ide0007.severity = warning
+dotnet_diagnostic.ide0008.severity = none
 # IDE0010: Add missing cases to switch statement
 dotnet_diagnostic.ide0010.severity = suggestion
 # IDE0011: Add braces

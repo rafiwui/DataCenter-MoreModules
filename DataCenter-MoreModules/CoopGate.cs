@@ -1,5 +1,7 @@
 using Il2Cpp;
+
 using Il2CppSteamworks;
+
 using MelonLoader;
 
 namespace DataCenter_MoreModules;
@@ -19,7 +21,7 @@ public static class CoopGate
         _lobbyId = lobbyId;
         try
         {
-            SteamMatchmaking.SetLobbyData(new CSteamID(lobbyId), MarkerKey, MarkerValue);
+            _ = SteamMatchmaking.SetLobbyData(new CSteamID(lobbyId), MarkerKey, MarkerValue);
         }
         catch (Exception ex)
         {
@@ -42,7 +44,7 @@ public static class CoopGate
 
     public static bool BulkAllowed()
     {
-        CoopSession session = CoopSession.Instance;
+        var session = CoopSession.Instance;
         if (session == null || !session.IsActive)
         {
             return true;
@@ -56,16 +58,16 @@ public static class CoopGate
 
         try
         {
-            CSteamID lobby = new CSteamID(_lobbyId);
+            var lobby = new CSteamID(_lobbyId);
             if (string.IsNullOrEmpty(SteamMatchmaking.GetLobbyData(lobby, MarkerKey)))
             {
                 return false;
             }
 
-            int memberCount = SteamMatchmaking.GetNumLobbyMembers(lobby);
-            for (int i = 0; i < memberCount; i++)
+            var memberCount = SteamMatchmaking.GetNumLobbyMembers(lobby);
+            for (var i = 0; i < memberCount; i++)
             {
-                CSteamID member = SteamMatchmaking.GetLobbyMemberByIndex(lobby, i);
+                var member = SteamMatchmaking.GetLobbyMemberByIndex(lobby, i);
                 if (string.IsNullOrEmpty(SteamMatchmaking.GetLobbyMemberData(lobby, member, MarkerKey)))
                 {
                     return false;

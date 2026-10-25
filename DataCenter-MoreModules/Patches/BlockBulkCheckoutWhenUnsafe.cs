@@ -1,5 +1,7 @@
 using HarmonyLib;
+
 using Il2Cpp;
+
 using MelonLoader;
 
 namespace DataCenter_MoreModules.Patches;
@@ -15,8 +17,8 @@ public class BlockBulkCheckoutWhenUnsafe
             return true;
         }
 
-        List<ShopCartItem> bulkLines = new List<ShopCartItem>();
-        foreach (ShopCartItem line in __instance.cartUIItems)
+        var bulkLines = new List<ShopCartItem>();
+        foreach (var line in __instance.cartUIItems)
         {
             if (line != null && CartHelper.IsBulkName(line.itemName))
             {
@@ -29,12 +31,12 @@ public class BlockBulkCheckoutWhenUnsafe
             return true;
         }
 
-        foreach (ShopCartItem line in bulkLines)
+        foreach (var line in bulkLines)
         {
             __instance.RemoveCartUIItem(line);
         }
 
-        string message = "Bulk boxes need every player to have the More Modules mod. They were removed from the cart.";
+        var message = "Bulk boxes need every player to have the More Modules mod. They were removed from the cart.";
         MelonLogger.Warning($"[BulkBox] {message}");
         StaticUIElements.instance?.AddMeesageInField(message);
         return false;

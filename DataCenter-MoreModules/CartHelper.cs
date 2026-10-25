@@ -9,17 +9,31 @@ public static class CartHelper
     public static bool IsBulkName(string name)
     {
         foreach (var config in BulkBoxBase.BoxConfigs)
-            if (config.BulkName == name) return true;
+        {
+            if (config.BulkName == name)
+            {
+                return true;
+            }
+        }
+
         return false;
     }
 
     public static bool CartHasBulkLine(ComputerShop shop, int itemID, PlayerManager.ObjectInHand itemType)
     {
-        if (shop.cartUIItems == null) return false;
+        if (shop.cartUIItems == null)
+        {
+            return false;
+        }
 
         foreach (var line in shop.cartUIItems)
+        {
             if (line != null && line.itemID == itemID && line.itemType == itemType && IsBulkName(line.itemName))
+            {
                 return true;
+            }
+        }
+
         return false;
     }
 
@@ -30,7 +44,7 @@ public static class CartHelper
             StaticUIElements.instance?.SetNotification(LocId.ContainerAlreadyFull);
             return;
         }
-        
+
         ShopCartItem existing = null;
         if (shop.cartUIItems != null)
         {
@@ -45,9 +59,13 @@ public static class CartHelper
         }
 
         if (existing != null)
+        {
             shop.BuyAnotherItem(itemID, price, itemType, existing);
+        }
         else
+        {
             shop.AddNewCartItem(itemID, price, itemType, displayName, new Il2CppSystem.Nullable<UnityEngine.Color>());
+        }
 
         shop.UpdateCartTotal();
     }

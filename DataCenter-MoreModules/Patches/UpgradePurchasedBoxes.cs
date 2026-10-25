@@ -1,7 +1,8 @@
 using HarmonyLib;
+
 using Il2Cpp;
+
 using MelonLoader;
-using UnityEngine;
 
 namespace DataCenter_MoreModules.Patches;
 
@@ -12,7 +13,7 @@ namespace DataCenter_MoreModules.Patches;
 public class UpgradePurchasedBoxes : BulkBoxBase
 {
     // Bulk capacities still to hand out, per sfpBoxType (== cart itemID)
-    private static readonly Dictionary<int, Queue<int>> _pendingCapacities = new Dictionary<int, Queue<int>>();
+    private static readonly Dictionary<int, Queue<int>> _pendingCapacities = new();
 
     public static void Prefix(ComputerShop __instance)
     {
@@ -23,27 +24,27 @@ public class UpgradePurchasedBoxes : BulkBoxBase
             return;
         }
 
-        foreach (ShopCartItem cartItem in __instance.cartUIItems)
+        foreach (var cartItem in __instance.cartUIItems)
         {
             if (cartItem == null)
             {
                 continue;
             }
 
-            foreach (BulkConfig config in BoxConfigs)
+            foreach (var config in BoxConfigs)
             {
                 if (cartItem.itemID != config.OriginalID || cartItem.itemName != config.BulkName)
                 {
                     continue;
                 }
 
-                if (!_pendingCapacities.TryGetValue(config.OriginalID, out Queue<int> queue))
+                if (!_pendingCapacities.TryGetValue(config.OriginalID, out var queue))
                 {
                     queue = new Queue<int>();
                     _pendingCapacities[config.OriginalID] = queue;
                 }
 
-                for (int i = 0; i < cartItem.Quantity; i++)
+                for (var i = 0; i < cartItem.Quantity; i++)
                 {
                     queue.Enqueue(config.Quantity);
                 }
@@ -55,7 +56,7 @@ public class UpgradePurchasedBoxes : BulkBoxBase
 
     public static void Postfix()
     {
-        foreach (KeyValuePair<int, Queue<int>> pair in _pendingCapacities)
+        foreach (var pair in _pendingCapacities)
         {
             if (pair.Value.Count > 0)
             {
@@ -69,7 +70,7 @@ public class UpgradePurchasedBoxes : BulkBoxBase
     // Which of the spawned boxes of a type becomes the 32 or the 64 does not matter: all are fresh, full and identical
     public static void UpgradeSpawnedBox(SFPBox box)
     {
-        if (_pendingCapacities.TryGetValue(box.sfpBoxType, out Queue<int> queue) && queue.Count > 0)
+        if (_pendingCapacities.TryGetValue(box.sfpBoxType, out var queue) && queue.Count > 0)
         {
             MoreModules.UpgradeToBulkBox(box, queue.Dequeue());
         }
@@ -86,12 +87,12 @@ public class UpgradeBoxOnSpawn
             return;
         }
 
-        if (!__instance.spawnedItems.TryGetValue(__result.Value, out GameObject spawned) || spawned == null)
+        if (!__instance.spawnedItems.TryGetValue(__result.Value, out var spawned) || spawned == null)
         {
             return;
         }
 
-        SFPBox box = spawned.GetComponent<SFPBox>();
+        var box = spawned.GetComponent<SFPBox>();
         if (box != null)
         {
             UpgradePurchasedBoxes.UpgradeSpawnedBox(box);
