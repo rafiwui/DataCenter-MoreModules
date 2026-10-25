@@ -4,20 +4,25 @@ using Il2Cpp;
 
 using MelonLoader;
 
+
 namespace DataCenter_MoreModules.Patches;
 
 // Checkout spawns one plain 5-slot box per purchased unit inside SpawnAllPurchasedItems and announces each one to the
 // other players right after it spawned. The cart is read before the spawning starts and every spawned box is upgraded
-// in SpawnPhysicalItem, so the announcement already carries the bulk capacity and a save can never catch it un-upgraded.
+// right after SpawnPhysicalItem, so the announcement already carries the bulk capacity and a save can never catch it un-upgraded.
 [HarmonyPatch(typeof(ComputerShop), nameof(ComputerShop.SpawnAllPurchasedItems))]
 public class UpgradePurchasedBoxes : BulkBoxBase
 {
     // Bulk capacities still to hand out, per sfpBoxType (== cart itemID)
     private static readonly Dictionary<int, Queue<int>> _pendingCapacities = new();
 
+    // Spawned objects that were there before the batch or are already handled, by instance id
+    private static readonly HashSet<int> _handledObjects = new();
+
     public static void Prefix(ComputerShop __instance)
     {
         _pendingCapacities.Clear();
+        _handledObjects.Clear();
 
         if (__instance.cartUIItems == null)
         {
@@ -52,6 +57,19 @@ public class UpgradePurchasedBoxes : BulkBoxBase
                 MelonLogger.Msg($"[BulkBox] Ordered {cartItem.Quantity}x of {config.BulkName}");
             }
         }
+
+        if (_pendingCapacities.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var existing in __instance.spawnedItems.Values)
+        {
+            if (existing != null)
+            {
+                _ = _handledObjects.Add(existing.GetInstanceID());
+            }
+        }
     }
 
     public static void Postfix()
@@ -65,6 +83,31 @@ public class UpgradePurchasedBoxes : BulkBoxBase
         }
 
         _pendingCapacities.Clear();
+        _handledObjects.Clear();
+    }
+
+    // SpawnPhysicalItem returns the uid of the new object as a Nullable<int>, which is unreliable to read through the interop.
+    // The new box is the one in the shop's spawned items that was not seen before.
+    public static void UpgradeNewBoxes(ComputerShop shop)
+    {
+        if (_pendingCapacities.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var spawned in shop.spawnedItems.Values)
+        {
+            if (spawned == null || !_handledObjects.Add(spawned.GetInstanceID()))
+            {
+                continue;
+            }
+
+            var box = spawned.GetComponentInChildren<SFPBox>(true);
+            if (box != null)
+            {
+                UpgradeSpawnedBox(box);
+            }
+        }
     }
 
     // Which of the spawned boxes of a type becomes the 32 or the 64 does not matter: all are fresh, full and identical
@@ -72,7 +115,9 @@ public class UpgradePurchasedBoxes : BulkBoxBase
     {
         if (_pendingCapacities.TryGetValue(box.sfpBoxType, out var queue) && queue.Count > 0)
         {
-            MoreModules.UpgradeToBulkBox(box, queue.Dequeue());
+            var capacity = queue.Dequeue();
+            MoreModules.UpgradeToBulkBox(box, capacity);
+            MelonLogger.Msg($"[BulkBox] Spawned box of type {box.sfpBoxType} upgraded to {capacity} slots");
         }
     }
 }
@@ -80,22 +125,8 @@ public class UpgradePurchasedBoxes : BulkBoxBase
 [HarmonyPatch(typeof(ComputerShop), nameof(ComputerShop.SpawnPhysicalItem))]
 public class UpgradeBoxOnSpawn
 {
-    public static void Postfix(ComputerShop __instance, Il2CppSystem.Nullable<int> __result, PlayerManager.ObjectInHand itemType)
+    public static void Postfix(ComputerShop __instance)
     {
-        if (itemType != PlayerManager.ObjectInHand.SFPBox || !__result.HasValue)
-        {
-            return;
-        }
-
-        if (!__instance.spawnedItems.TryGetValue(__result.Value, out var spawned) || spawned == null)
-        {
-            return;
-        }
-
-        var box = spawned.GetComponent<SFPBox>();
-        if (box != null)
-        {
-            UpgradePurchasedBoxes.UpgradeSpawnedBox(box);
-        }
+        UpgradePurchasedBoxes.UpgradeNewBoxes(__instance);
     }
 }
